@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import com.test.traklapp.R
 import com.test.traklapp.model.Track
+import java.lang.Math.round
+import kotlin.math.roundToInt
 
 class TrackAdapter(  private val trackList: ArrayList<Track>) :
     RecyclerView.Adapter<TrackAdapter.ViewHolder>() {
@@ -27,9 +29,9 @@ class TrackAdapter(  private val trackList: ArrayList<Track>) :
         holder: ViewHolder,
         position: Int
     ) {
-       // holder.setIsRecyclable(false)
         holder.title.text = trackList[position].trackName
         holder.author.text = trackList[position].artistName
+        holder.time.text = (trackList[position].trackTimeMillis?.div(60000.0)?.roundTo(2))!!.replace(',',':')
         Picasso.with(holder.picture.context).load(trackList[position].artworkUrl100).fit().centerCrop().into(holder.picture)
     }
 
@@ -63,6 +65,7 @@ class TrackAdapter(  private val trackList: ArrayList<Track>) :
         RecyclerView.ViewHolder(itemView), View.OnClickListener {
         var title: TextView = itemView.findViewById(R.id.title)
         var author: TextView = itemView.findViewById(R.id.author)
+        var time: TextView = itemView.findViewById(R.id.time)
         var picture : ImageView = itemView.findViewById(R.id.picture_image)
         override fun onClick(view: View) {
             if (mClickListener != null) mClickListener!!.onItemClick(view, adapterPosition)
@@ -73,5 +76,10 @@ class TrackAdapter(  private val trackList: ArrayList<Track>) :
         }
     }
 
+    fun Double.roundTo(n : Int) : String {
+        return "%.${n}f".format(this)
+    }
+
 
 }
+

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">TraklApp</string>
+    <string name="enter_name">Enter track name</string>
 </resources>
