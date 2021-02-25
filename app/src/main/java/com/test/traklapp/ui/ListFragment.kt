@@ -35,6 +35,7 @@ class ListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         viewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application).create(
             ListViewModel::class.java)
 
@@ -64,7 +65,7 @@ class ListFragment : Fragment() {
        recycler_view_track.adapter = trackAdapter
         trackAdapter.setonItemClickListener(object : TrackAdapter.ItemClickListener {
             override fun onItemClick(view: View?, position: Int) {
-                var bundle = Bundle()
+                val bundle = Bundle()
                 bundle.putSerializable("track", trackList[position])
                 (activity as MainActivity).navController.navigate(R.id.action_listFragment_to_detailFragment,bundle)
             }

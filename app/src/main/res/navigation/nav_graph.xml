@@ -19,4 +19,8 @@
             android:id="@+id/action_detailFragment_to_listFragment"
             app:destination="@id/listFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/alarmFragment"
+        android:name="com.test.traklapp.ui.AlarmFragment"
+        android:label="AlarmFragment" />
 </navigation>

@@ -3,13 +3,11 @@ package com.test.traklapp.ui
 import android.annotation.SuppressLint
 import android.media.AudioAttributes
 import android.media.MediaPlayer
+import android.opengl.Visibility
 import android.os.Bundle
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -19,7 +17,6 @@ import com.test.traklapp.model.Track
 import com.test.traklapp.vm.DetailViewModel
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.fragment_detail.*
-import java.io.Serializable
 
 class DetailFragment : Fragment() {
 
@@ -40,9 +37,6 @@ class DetailFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         play_button.setOnClickListener { play() }
-        changeObservable = PublishSubject.create()
-        changeObservable.subscribe { state -> stateButton(state)  }
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -51,7 +45,11 @@ class DetailFragment : Fragment() {
             ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application)
                 .create(DetailViewModel::class.java)
         track = arguments?.getSerializable("track") as Track
-        Picasso.with(activity).load(track.artworkUrl100).into(poster)
+        Picasso.with(activity).load(track.artworkUrl100?.replace("100", "600")).fit().centerCrop().into(poster)
+        title.text = "%s - %s".format(track.artistName, track.trackName)
+        changeObservable = PublishSubject.create()
+        changeObservable.subscribe { state -> stateButton(state)  }
+        (activity as MainActivity).bottomNavigationView.visibility = View.GONE
         initPlayer()
     }
 
@@ -65,14 +63,14 @@ class DetailFragment : Fragment() {
         }
     }
 
-    fun stateButton(state : Boolean) {
+    private fun stateButton(state : Boolean) {
         if (state)
             play_button.setImageDrawable(activity?.let { ContextCompat.getDrawable(it, R.drawable.ic_pause) })
         else
             play_button.setImageDrawable(activity?.let { ContextCompat.getDrawable(it, R.drawable.ic_play) })
     }
 
-    fun initPlayer() {
+    private fun initPlayer() {
         mediaPlayer = MediaPlayer().apply {
             setAudioAttributes(
                 AudioAttributes.Builder()
@@ -83,7 +81,14 @@ class DetailFragment : Fragment() {
         }
         mediaPlayer.setDataSource(track.previewUrl)
         mediaPlayer.prepare()
+        mediaPlayer.start()
+        changeObservable.onNext(true)
         mediaPlayer.setOnCompletionListener { changeObservable.onNext(false) }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        (activity as MainActivity).bottomNavigationView.visibility = View.VISIBLE
     }
 
 
